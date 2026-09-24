@@ -15,6 +15,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from sqlalchemy import select, update
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from portal.auth import (
@@ -667,7 +668,7 @@ async def admin_delete_event(request: Request, event_id: int):
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found.")
     except HTTPException:
         raise
-    except Exception as e:
+    except SQLAlchemyError as e:
         logger.error(f"Failed to delete event {event_id}: {e}")
         return safe_redirect(url="/admin/events/?error=delete_failed", status_code=status.HTTP_303_SEE_OTHER)
     return safe_redirect(url="/admin/events/", status_code=status.HTTP_303_SEE_OTHER)
