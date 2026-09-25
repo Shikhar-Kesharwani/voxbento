@@ -661,6 +661,7 @@ async def admin_event_api_settings_post(
 
 @router.post("/admin/events/{event_id}/delete", dependencies=[Depends(require_admin)])
 async def admin_delete_event(request: Request, event_id: int):
+    """Delete an event by ID, returning 404 if missing or redirecting with an error alert on database failure."""
     try:
         async with get_session() as session:
             deleted = await delete_event(session, event_id)
